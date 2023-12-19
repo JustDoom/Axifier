@@ -8,9 +8,10 @@
     "JustDoom"
   ],
   "contact": {
-    "sources": "https://github.com/JustDoom/Axifier"
+    "sources": "https://github.com/JustDoom/Axifier",
+    "issues": "https://github.com/JustDoom/Axifier/issues"
   },
-  "license": "GPLv3",
+  "license": "MIT",
   "icon": "assets/justneeded/logo-fabric.png",
   "environment": "*",
   "entrypoints": {

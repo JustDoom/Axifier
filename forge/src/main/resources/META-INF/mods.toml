@@ -1,7 +1,7 @@
 modLoader = "javafml"
 loaderVersion = "[47,)"
-#issueTrackerURL = ""
-license = "GPLv3"
+issueTrackerURL = "https://github.com/JustDoom/Axifier/issues"
+license = "MIT"
 
 [[mods]]
 modId = "axifier"
