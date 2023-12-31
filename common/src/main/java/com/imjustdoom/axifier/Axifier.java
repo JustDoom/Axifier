@@ -7,6 +7,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.AgeableMob;
+import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -42,8 +43,27 @@ public class Axifier {
                     LootParams lootParams = builder.create(LootContextParamSets.ENTITY);
                     lootTable.getRandomItems(lootParams, mob.getLootTableSeed(), mob::spawnAtLocation);
                 }
+            } else if (player.getItemInHand(hand).is(ItemTags.AXES) && entity instanceof Zombie mob && !mob.isBaby()) {
+                Level level = mob.level();
+                level.playSound(null, entity, SoundEvents.AXE_STRIP, SoundSource.BLOCKS, 1f, 1f);
 
-//                return EventResult.interruptDefault();
+                mob.setBaby(true);
+                mob.hurt(level.damageSources().generic(), 2f);
+
+                player.getItemInHand(hand).hurtAndBreak(1, player, p -> p.broadcastBreakEvent(hand));
+
+                if (!mob.isDeadOrDying()) {
+                    LootTable lootTable = player.getServer().getLootData().getLootTable(mob.getLootTable());
+                    LootParams.Builder builder = new LootParams.Builder((ServerLevel) level)
+                            .withParameter(LootContextParams.THIS_ENTITY, mob)
+                            .withParameter(LootContextParams.ORIGIN, mob.position())
+                            .withParameter(LootContextParams.DAMAGE_SOURCE, level.damageSources().generic())
+                            .withOptionalParameter(LootContextParams.KILLER_ENTITY, player)
+                            .withOptionalParameter(LootContextParams.DIRECT_KILLER_ENTITY, player);
+                    builder = builder.withParameter(LootContextParams.LAST_DAMAGE_PLAYER, player).withLuck(player.getLuck());
+                    LootParams lootParams = builder.create(LootContextParamSets.ENTITY);
+                    lootTable.getRandomItems(lootParams, mob.getLootTableSeed(), mob::spawnAtLocation);
+                }
             }
             return EventResult.pass();
         });
