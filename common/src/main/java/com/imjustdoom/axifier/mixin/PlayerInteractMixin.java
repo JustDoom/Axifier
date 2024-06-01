@@ -1,5 +1,6 @@
 package com.imjustdoom.axifier.mixin;
 
+import com.imjustdoom.axifier.config.Config;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -27,16 +28,22 @@ public abstract class PlayerInteractMixin {
     private void interact(Entity entity, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
         Player player = (Player) (Object) this;
 
-        if (player.getServer() == null) return;
+        if (player.level().isClientSide()) return;
 
         if (entity instanceof AgeableMob mob && !mob.isBaby() && player.getItemInHand(hand).is(ItemTags.AXES)) {
             Level level = mob.level();
             level.playSound(null, entity, SoundEvents.AXE_STRIP, SoundSource.BLOCKS, 1f, 1f);
 
             mob.setBaby(true);
-            mob.hurt(level.damageSources().generic(), 2f);
 
             player.getItemInHand(hand).hurtAndBreak(1, player, p -> p.broadcastBreakEvent(hand));
+
+            if (Math.random() >= Config.SURVIVAL_CHANCE) {
+                mob.kill();
+                return;
+            }
+
+            mob.hurt(level.damageSources().generic(), Config.DAMAGE);
 
             if (!mob.isDeadOrDying()) {
                 LootTable lootTable = player.getServer().getLootData().getLootTable(mob.getLootTable());
@@ -55,9 +62,15 @@ public abstract class PlayerInteractMixin {
             level.playSound(null, entity, SoundEvents.AXE_STRIP, SoundSource.BLOCKS, 1f, 1f);
 
             mob.setBaby(true);
-            mob.hurt(level.damageSources().generic(), 2f);
 
             player.getItemInHand(hand).hurtAndBreak(1, player, p -> p.broadcastBreakEvent(hand));
+
+            if (Math.random() >= Config.SURVIVAL_CHANCE) {
+                mob.kill();
+                return;
+            }
+
+            mob.hurt(level.damageSources().generic(), Config.DAMAGE);
 
             if (!mob.isDeadOrDying()) {
                 LootTable lootTable = player.getServer().getLootData().getLootTable(mob.getLootTable());
