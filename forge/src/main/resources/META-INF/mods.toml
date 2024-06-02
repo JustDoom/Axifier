@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[46,49]"
+loaderVersion = "[50,)"
 issueTrackerURL = "https://github.com/JustDoom/Axifier/issues"
 license = "MIT"
 
@@ -16,7 +16,7 @@ logoFile = "logo-forge.png"
 [[dependencies.axifier]]
 modId = "forge"
 mandatory = true
-versionRange = "[46,49]"
+versionRange = "[50,)"
 ordering = "NONE"
 side = "BOTH"
 

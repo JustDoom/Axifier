@@ -9,8 +9,10 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -30,13 +32,15 @@ public abstract class PlayerInteractMixin {
 
         if (player.level().isClientSide()) return;
 
-        if (entity instanceof AgeableMob mob && !mob.isBaby() && player.getItemInHand(hand).is(ItemTags.AXES)) {
+        ItemStack handItem = player.getItemInHand(hand);
+
+        if (entity instanceof AgeableMob mob && !mob.isBaby() && handItem.is(ItemTags.AXES)) {
             Level level = mob.level();
             level.playSound(null, entity, SoundEvents.AXE_STRIP, SoundSource.BLOCKS, 1f, 1f);
 
             mob.setBaby(true);
 
-            player.getItemInHand(hand).hurtAndBreak(1, player, p -> p.broadcastBreakEvent(hand));
+            handItem.hurtAndBreak(1, player, hand == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
 
             if (Math.random() >= Config.SURVIVAL_CHANCE) {
                 mob.kill();
@@ -46,7 +50,7 @@ public abstract class PlayerInteractMixin {
             mob.hurt(level.damageSources().generic(), Config.DAMAGE);
 
             if (!mob.isDeadOrDying()) {
-                LootTable lootTable = player.getServer().getLootData().getLootTable(mob.getLootTable());
+                LootTable lootTable = player.getServer().reloadableRegistries().getLootTable(mob.getLootTable());
                 LootParams.Builder builder = new LootParams.Builder((ServerLevel) level)
                         .withParameter(LootContextParams.THIS_ENTITY, mob)
                         .withParameter(LootContextParams.ORIGIN, mob.position())
@@ -57,13 +61,13 @@ public abstract class PlayerInteractMixin {
                 LootParams lootParams = builder.create(LootContextParamSets.ENTITY);
                 lootTable.getRandomItems(lootParams, mob.getLootTableSeed(), mob::spawnAtLocation);
             }
-        } else if (player.getItemInHand(hand).is(ItemTags.AXES) && entity instanceof Zombie mob && !mob.isBaby()) {
+        } else if (handItem.is(ItemTags.AXES) && entity instanceof Zombie mob && !mob.isBaby()) {
             Level level = mob.level();
             level.playSound(null, entity, SoundEvents.AXE_STRIP, SoundSource.BLOCKS, 1f, 1f);
 
             mob.setBaby(true);
 
-            player.getItemInHand(hand).hurtAndBreak(1, player, p -> p.broadcastBreakEvent(hand));
+            handItem.hurtAndBreak(1, player, hand == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
 
             if (Math.random() >= Config.SURVIVAL_CHANCE) {
                 mob.kill();
@@ -73,7 +77,7 @@ public abstract class PlayerInteractMixin {
             mob.hurt(level.damageSources().generic(), Config.DAMAGE);
 
             if (!mob.isDeadOrDying()) {
-                LootTable lootTable = player.getServer().getLootData().getLootTable(mob.getLootTable());
+                LootTable lootTable = player.getServer().reloadableRegistries().getLootTable(mob.getLootTable());
                 LootParams.Builder builder = new LootParams.Builder((ServerLevel) level)
                         .withParameter(LootContextParams.THIS_ENTITY, mob)
                         .withParameter(LootContextParams.ORIGIN, mob.position())
