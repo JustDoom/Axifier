@@ -1,6 +1,6 @@
-package com.imjustdoom.axifier.config.forge;
+package com.imjustdoom.axifier.config.neoforge;
 
-import net.minecraftforge.fml.loading.FMLPaths;
+import net.neoforged.fml.loading.FMLPaths;
 
 import java.nio.file.Path;
 
