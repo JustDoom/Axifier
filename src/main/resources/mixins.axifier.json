@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.imjustdoom.axifier.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "PlayerInteractMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
