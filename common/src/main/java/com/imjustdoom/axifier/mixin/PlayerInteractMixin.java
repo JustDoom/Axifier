@@ -10,6 +10,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -35,59 +36,39 @@ public abstract class PlayerInteractMixin {
         ItemStack handItem = player.getItemInHand(hand);
 
         if (entity instanceof AgeableMob mob && !mob.isBaby() && handItem.is(ItemTags.AXES)) {
-            Level level = mob.level();
-            level.playSound(null, entity, SoundEvents.AXE_STRIP, SoundSource.BLOCKS, 1f, 1f);
-
             mob.setBaby(true);
 
-            handItem.hurtAndBreak(1, player, hand == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
-
-            if (Math.random() >= Config.SURVIVAL_CHANCE) {
-                mob.kill();
-                return;
-            }
-
-            mob.hurt(level.damageSources().generic(), Config.DAMAGE);
-
-            if (!mob.isDeadOrDying()) {
-                LootTable lootTable = player.getServer().reloadableRegistries().getLootTable(mob.getLootTable());
-                LootParams.Builder builder = new LootParams.Builder((ServerLevel) level)
-                        .withParameter(LootContextParams.THIS_ENTITY, mob)
-                        .withParameter(LootContextParams.ORIGIN, mob.position())
-                        .withParameter(LootContextParams.DAMAGE_SOURCE, level.damageSources().generic())
-                        .withOptionalParameter(LootContextParams.KILLER_ENTITY, player)
-                        .withOptionalParameter(LootContextParams.DIRECT_KILLER_ENTITY, player);
-                builder = builder.withParameter(LootContextParams.LAST_DAMAGE_PLAYER, player).withLuck(player.getLuck());
-                LootParams lootParams = builder.create(LootContextParamSets.ENTITY);
-                lootTable.getRandomItems(lootParams, mob.getLootTableSeed(), mob::spawnAtLocation);
-            }
+            everythingElse(handItem, player, hand, mob.level(), mob);
         } else if (handItem.is(ItemTags.AXES) && entity instanceof Zombie mob && !mob.isBaby()) {
-            Level level = mob.level();
-            level.playSound(null, entity, SoundEvents.AXE_STRIP, SoundSource.BLOCKS, 1f, 1f);
-
             mob.setBaby(true);
 
-            handItem.hurtAndBreak(1, player, hand == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
+            everythingElse(handItem, player, hand, mob.level(), mob);
+        }
+    }
 
-            if (Math.random() >= Config.SURVIVAL_CHANCE) {
-                mob.kill();
-                return;
-            }
+    private void everythingElse(ItemStack handItem, Player player, InteractionHand hand, Level level, LivingEntity mob) {
 
-            mob.hurt(level.damageSources().generic(), Config.DAMAGE);
+        level.playSound(null, mob, SoundEvents.AXE_STRIP, SoundSource.BLOCKS, 1f, 1f);
+        handItem.hurtAndBreak(1, player, hand == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
 
-            if (!mob.isDeadOrDying()) {
-                LootTable lootTable = player.getServer().reloadableRegistries().getLootTable(mob.getLootTable());
-                LootParams.Builder builder = new LootParams.Builder((ServerLevel) level)
-                        .withParameter(LootContextParams.THIS_ENTITY, mob)
-                        .withParameter(LootContextParams.ORIGIN, mob.position())
-                        .withParameter(LootContextParams.DAMAGE_SOURCE, level.damageSources().generic())
-                        .withOptionalParameter(LootContextParams.KILLER_ENTITY, player)
-                        .withOptionalParameter(LootContextParams.DIRECT_KILLER_ENTITY, player);
-                builder = builder.withParameter(LootContextParams.LAST_DAMAGE_PLAYER, player).withLuck(player.getLuck());
-                LootParams lootParams = builder.create(LootContextParamSets.ENTITY);
-                lootTable.getRandomItems(lootParams, mob.getLootTableSeed(), mob::spawnAtLocation);
-            }
+        if (Math.random() >= Config.SURVIVAL_CHANCE) {
+            mob.kill();
+            return;
+        }
+
+        mob.hurt(level.damageSources().generic(), Config.DAMAGE);
+
+        if (!mob.isDeadOrDying()) {
+            LootTable lootTable = player.getServer().reloadableRegistries().getLootTable(mob.getLootTable());
+            LootParams.Builder builder = new LootParams.Builder((ServerLevel) level)
+                    .withParameter(LootContextParams.THIS_ENTITY, mob)
+                    .withParameter(LootContextParams.ORIGIN, mob.position())
+                    .withParameter(LootContextParams.DAMAGE_SOURCE, level.damageSources().generic())
+                    .withOptionalParameter(LootContextParams.ATTACKING_ENTITY, player)
+                    .withOptionalParameter(LootContextParams.DIRECT_ATTACKING_ENTITY, player);
+            builder = builder.withParameter(LootContextParams.LAST_DAMAGE_PLAYER, player).withLuck(player.getLuck());
+            LootParams lootParams = builder.create(LootContextParamSets.ENTITY);
+            lootTable.getRandomItems(lootParams, mob.getLootTableSeed(), mob::spawnAtLocation);
         }
     }
 }
