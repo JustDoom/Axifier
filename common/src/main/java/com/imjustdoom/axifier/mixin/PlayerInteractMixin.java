@@ -35,7 +35,7 @@ public abstract class PlayerInteractMixin {
 
         ItemStack handItem = player.getItemInHand(hand);
 
-        if (!handItem.is(ItemTags.AXES) || Config.DISABLED_MOBS.contains(entity.getType()))
+        if (!handItem.is(ItemTags.AXES) || Config.DISABLED_MOBS.contains(entity.getType())) return;
         if (entity instanceof AgeableMob mob && !mob.isBaby()) {
             mob.setBaby(true);
             everythingElse(handItem, player, hand, entity.level(), mob);
