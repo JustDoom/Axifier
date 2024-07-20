@@ -9,6 +9,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -28,7 +29,7 @@ public abstract class PlayerInteractMixin {
     private void interact(Entity entity, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
         Player player = (Player) (Object) this;
 
-        if (player.level().isClientSide()) return;
+        if (player.level().isClientSide() || Config.DISABLED_MOBS.contains(entity.getType())) return;
 
         if (entity instanceof AgeableMob mob && !mob.isBaby() && player.getItemInHand(hand).is(ItemTags.AXES)) {
             Level level = mob.level();
