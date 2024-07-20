@@ -30,7 +30,7 @@ public abstract class PlayerInteractMixin {
     private void interact(Entity entity, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
         Player player = (Player) (Object) this;
 
-        if (player.level().isClientSide()) return;
+        if (player.level().isClientSide() || Config.DISABLED_MOBS.contains(entity.getType())) return;
 
         ItemStack handItem = player.getItemInHand(hand);
 
