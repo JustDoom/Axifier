@@ -21,7 +21,6 @@ public class Config {
 
     public static float DAMAGE;
     public static float SURVIVAL_CHANCE;
-    public static boolean AFFECTS_ZOMBIES;
     public static List<EntityType<?>> DISABLED_MOBS;
 
     public static void init() throws IOException {
@@ -34,7 +33,6 @@ public class Config {
 
         DAMAGE = getFloat("damage", "2.0");
         SURVIVAL_CHANCE = getFloat("survival-chance", "1.0");
-        AFFECTS_ZOMBIES = getBoolean("affects-zombies", "true");
         DISABLED_MOBS = getEntityTypeList("disabled-mobs", "minecraft:villager,minecraft:wandering_trader");
 
         save();
