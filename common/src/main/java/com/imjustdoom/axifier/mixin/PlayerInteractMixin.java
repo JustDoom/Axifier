@@ -32,24 +32,18 @@ public abstract class PlayerInteractMixin {
 
         ItemStack handItem = player.getItemInHand(hand);
 
-        for (EntityType<?> entityType : Config.DISABLED_MOBS) {
-            if (entityType == entity.getType()) {
-                return;
-            }
-        }
-
-        if (entity instanceof AgeableMob mob && !mob.isBaby() && handItem.is(ItemTags.AXES)) {
+        if (!handItem.is(ItemTags.AXES) || Config.DISABLED_MOBS.contains(entity.getType())) return;
+        if (entity instanceof AgeableMob mob && !mob.isBaby()) {
             mob.setBaby(true);
-
-            everythingElse(handItem, player, hand, mob.level(), mob);
-        } else if (handItem.is(ItemTags.AXES) && entity instanceof Zombie mob && !mob.isBaby()) {
+            everythingElse(handItem, player, hand, mob);
+        } else if (entity instanceof Zombie mob && !mob.isBaby()) {
             mob.setBaby(true);
-
-            everythingElse(handItem, player, hand, mob.level(), mob);
+            everythingElse(handItem, player, hand, mob);
         }
     }
 
-    private void everythingElse(ItemStack handItem, Player player, InteractionHand hand, Level level, LivingEntity mob) {
+    private void everythingElse(ItemStack handItem, Player player, InteractionHand hand, LivingEntity mob) {
+        Level level = mob.level();
 
         level.playSound(null, mob, SoundEvents.AXE_STRIP, SoundSource.BLOCKS, 1f, 1f);
         handItem.hurtAndBreak(1, player, hand == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
