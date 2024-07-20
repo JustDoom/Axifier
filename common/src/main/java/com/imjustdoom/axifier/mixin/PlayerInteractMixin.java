@@ -7,10 +7,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.AgeableMob;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -34,6 +31,12 @@ public abstract class PlayerInteractMixin {
         if (player.level().isClientSide()) return;
 
         ItemStack handItem = player.getItemInHand(hand);
+
+        for (EntityType<?> entityType : Config.DISABLED_MOBS) {
+            if (entityType == entity.getType()) {
+                return;
+            }
+        }
 
         if (entity instanceof AgeableMob mob && !mob.isBaby() && handItem.is(ItemTags.AXES)) {
             mob.setBaby(true);
