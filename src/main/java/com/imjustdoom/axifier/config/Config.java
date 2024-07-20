@@ -1,5 +1,7 @@
 package com.imjustdoom.axifier.config;
 
+import com.imjustdoom.axifier.Axifier;
+import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.fml.loading.FMLPaths;
 
 import java.io.File;
@@ -7,6 +9,9 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 
 public class Config {
@@ -17,6 +22,7 @@ public class Config {
     public static float DAMAGE;
     public static float SURVIVAL_CHANCE;
     public static boolean AFFECTS_ZOMBIES;
+    public static List<EntityType<?>> DISABLED_MOBS;
 
     public static void init() throws IOException {
         PROPERTIES = new Properties();
@@ -29,6 +35,7 @@ public class Config {
         DAMAGE = getFloat("damage", "2.0");
         SURVIVAL_CHANCE = getFloat("survival-chance", "1.0");
         AFFECTS_ZOMBIES = getBoolean("affects-zombies", "true");
+        DISABLED_MOBS = getEntityTypeList("disabled-mobs", "minecraft:villager,minecraft:wandering_trader");
 
         save();
     }
@@ -69,6 +76,30 @@ public class Config {
         return Boolean.parseBoolean(value);
     }
 
+    private static List<String> getStringList(final String setting, final String defaultValue) {
+        String value = PROPERTIES.getProperty(setting);
+        if (value == null) {
+            PROPERTIES.setProperty(setting, defaultValue);
+            value = defaultValue;
+        }
+        return Arrays.asList(value.split(","));
+    }
+
+    private static List<EntityType<?>> getEntityTypeList(final String setting, final String defaultValue) {
+        List<String> stringList = getStringList(setting, defaultValue);
+        List<EntityType<?>> entityTypeList = new ArrayList<>();
+        for (String entity : stringList) {
+            if (entity.isBlank()) continue;
+            EntityType.byString(entity).ifPresentOrElse((entityType) -> {
+                entityTypeList.add(entityType);
+                Axifier.LOGGER.info("EntityType \"{}\" has been added to the disabled list", entityType.getDescriptionId());
+            }, () -> {
+                Axifier.LOGGER.warn("EntityType \"{}\" was unable to be found", entity);
+            });
+        }
+        return entityTypeList;
+    }
+
     public static void save() throws IOException {
         PROPERTIES.store(new FileWriter(FILE_PATH.toFile()),
                 """
@@ -77,6 +108,8 @@ public class Config {
                         'survival-chance' the chance for the entity to survive being "stripped",
                         it is on a scale of 0-1. 0 is 0%, 1 is 100% and 0.32 is 32%. Default 1.0
                         'affects-zombies' sets if axifier should work on zombies. Default true
+                        'disabled-mobs' is a list of entities that will not be affected by this axe
+                                                example 'disabled-mobs=minecraft:villager,minecraft:cow,tabs:chickenman'
                         """);
     }
 }
