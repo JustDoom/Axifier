@@ -31,14 +31,15 @@ public abstract class PlayerInteractMixin {
     private void interact(Entity entity, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
         Player player = (Player) (Object) this;
 
-        if (player.level().isClientSide() || Config.DISABLED_MOBS.contains(entity.getType())) return;
+        if (player.level().isClientSide()) return;
 
         ItemStack handItem = player.getItemInHand(hand);
 
-        if (entity instanceof AgeableMob mob && !mob.isBaby() && handItem.is(ItemTags.AXES)) {
+        if (!handItem.is(ItemTags.AXES) || Config.DISABLED_MOBS.contains(entity.getType()))
+        if (entity instanceof AgeableMob mob && !mob.isBaby()) {
             mob.setBaby(true);
             everythingElse(handItem, player, hand, entity.level(), mob);
-        } else if (handItem.is(ItemTags.AXES) && entity instanceof Zombie mob && !mob.isBaby()) {
+        } else if (entity instanceof Zombie mob && !mob.isBaby()) { // Method names are the same but the Zombie does not inherit the AgeableMod class
             mob.setBaby(true);
             everythingElse(handItem, player, hand, entity.level(), mob);
         }
