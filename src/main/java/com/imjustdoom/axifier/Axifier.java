@@ -8,13 +8,14 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-@Mod(Axifier.MODID)
+@Mod(Axifier.MOD_ID)
 public class Axifier {
 
-    public static final String MODID = "axifier";
+    public static final String MOD_ID = "axifier";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
     public Axifier() {
