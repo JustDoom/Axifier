@@ -1,9 +1,7 @@
 package com.imjustdoom.axifier.config;
 
 import com.imjustdoom.axifier.Axifier;
-import dev.architectury.injectables.annotations.ExpectPlatform;
-import net.minecraft.client.resources.language.I18n;
-import net.minecraft.network.chat.Component;
+import com.imjustdoom.axifier.platform.Services;
 import net.minecraft.world.entity.EntityType;
 
 import java.io.File;
@@ -12,13 +10,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Config {
-
-    private static final Logger LOGGER = Logger.getLogger(Config.class.getName());
-
     private static Path FILE_PATH;
     private static Properties PROPERTIES;
 
@@ -28,7 +21,7 @@ public class Config {
 
     public static void init() throws IOException {
         PROPERTIES = new Properties();
-        FILE_PATH = Path.of(getConfigDirectory() + "/axifier.properties");
+        FILE_PATH = Path.of(Services.PLATFORM.getConfigPath() + "/axifier.properties");
         if (!FILE_PATH.toFile().exists()) {
             new File(FILE_PATH.toString()).createNewFile();
         }
@@ -112,10 +105,5 @@ public class Config {
                         'disabled-mobs' is a list of entities that will not be affected by this axe
                         example 'disabled-mobs=minecraft:villager,minecraft:cow,tabs:chickenman'
                         """);
-    }
-
-    @ExpectPlatform
-    public static Path getConfigDirectory() {
-        throw new AssertionError();
     }
 }

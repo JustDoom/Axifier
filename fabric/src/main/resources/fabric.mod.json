@@ -1,18 +1,18 @@
 {
   "schemaVersion": 1,
-  "id": "axifier",
+  "id": "${mod_id}",
   "version": "${version}",
-  "name": "Axifier",
-  "description": "Collect their flesh without killing them! Cruelty free!",
+  "name": "${mod_name}",
+  "description": "${description}",
   "authors": [
-    "JustDoom"
+    "${mod_author}"
   ],
   "contact": {
-    "sources": "https://github.com/JustDoom/Axifier",
-    "issues": "https://github.com/JustDoom/Axifier/issues"
+    "homepage": "https://imjustdoom.com/",
+    "sources": "https://github.com/JustDoom/Axifier"
   },
-  "license": "MIT",
-  "icon": "assets/justneeded/logo-fabric.png",
+  "license": "${license}",
+  "icon": "${mod_id}.png",
   "environment": "*",
   "entrypoints": {
     "main": [
@@ -20,10 +20,12 @@
     ]
   },
   "mixins": [
-    "axifier-common.mixins.json"
+    "${mod_id}-common.mixins.json"
   ],
   "depends": {
-    "fabric": "*",
-    "minecraft": ">=1.21"
+    "fabricloader": ">=${fabric_loader_version}",
+    "fabric-api": "*",
+    "minecraft": ">=${minecraft_version}",
+    "java": ">=${java_version}"
   }
 }
